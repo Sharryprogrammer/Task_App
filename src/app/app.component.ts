@@ -95,4 +95,37 @@ export class AppComponent implements OnInit {
       },
     });
   }
+  exportToCsv() {
+    // Prepare CSV content
+    let csvContent = '';
+    
+    // Add header row to CSV content
+    csvContent += this.displayedColumns.join(',') + '\r\n';
+  
+    // Add data rows to CSV content
+    this.dataSource.data.forEach((row) => {
+      const rowData = this.displayedColumns.map((column) => row[column]);
+      const rowString = rowData.join(',');
+      csvContent += rowString + '\r\n';
+    });
+  
+    // Convert CSV content to Blob
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  
+    // Create a temporary URL for the Blob
+    const url = URL.createObjectURL(blob);
+  
+    // Create a temporary anchor tag for download
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'employees.csv';
+  
+    // Trigger the download
+    document.body.appendChild(a);
+    a.click();
+  
+    // Clean up
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
 }
