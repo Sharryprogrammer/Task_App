@@ -27,7 +27,7 @@ export class AppComponent implements OnInit {
     'action',
   ];
   dataSource!: MatTableDataSource<any>;
-
+historyLog: string[] = [];
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
@@ -50,6 +50,7 @@ export class AppComponent implements OnInit {
         }
       },
     });
+    this.addToHistoryLog('Opened Add/Edit Form');
   }
 
   getEmployeeList() {
@@ -77,6 +78,7 @@ export class AppComponent implements OnInit {
       next: (res) => {
         this._coreService.openSnackBar('Employee deleted!', 'done');
         this.getEmployeeList();
+          this.addToHistoryLog('Deleted Employee with ID: ' + id);
       },
       error: console.log,
     });
@@ -94,6 +96,23 @@ export class AppComponent implements OnInit {
         }
       },
     });
+  }
+
+  addToHistoryLog(action: string) {
+    const timestamp = new Date().toLocaleString();
+    const logEntry = `${timestamp}: ${action}`;
+    this.historyLog.push(logEntry);
+  
+    // Display a snackbar notification for the added log entry
+    this._snackBar.open(logEntry, 'Dismiss', {
+      duration: 3000, // Duration in milliseconds (3 seconds in this example)
+      horizontalPosition: 'center',
+      verticalPosition: 'bottom',
+    });
+  }
+  openHistoryLogDialog() {
+    const historyLogString = this.historyLog.join('\n');
+    alert('History Log:\n' + historyLogString);
   }
   exportToCsv() {
     // Prepare CSV content
